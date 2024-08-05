@@ -1,0 +1,28 @@
+{
+  "name": "empower-care",
+  "version": "1.0.0",
+  "description": "Heath care Product",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "nodemon server",
+    "server": "nodemon server",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Edios Global",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "colors": "^1.4.0",
+    "cors": "^2.8.5",
+    "crypto-js": "^4.2.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-async-handler": "^1.2.0",
+    "mysql2": "^3.11.0",
+    "nodemon": "^3.1.4",
+    "otp-generator": "^4.0.1",
+    "sequelize": "^6.37.3",
+    "uuid": "^10.0.0"
+  }
+}
