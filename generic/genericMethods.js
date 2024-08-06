@@ -3,9 +3,37 @@ import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 
 const otpGenerator = require('otp-generator')
-
 var CryptoJS = require("crypto-js");
+const crypto = require('crypto');
 
+// Function to generate a 6-digit OTP
+export const generateOtpDigits = async () => {
+    return new Promise((resolve) => {
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        resolve(otp);
+    });
+};
+
+
+export const encryptOtp = async (otp) => {
+    return new Promise((resolve, reject) => {
+        try {
+            const secretKey = Buffer.from('EMPOWERCARE', 'utf8'); // Decode secret key from environment
+            if (secretKey.length !== 32) { // Ensure key length is correct (32 bytes for AES-256)
+                throw new Error('Invalid secret key length');
+            }
+
+            const iv = crypto.randomBytes(16); // Generate a secure random IV
+            const cipher = crypto.createCipheriv('aes-256-cbc', secretKey, iv);
+            let encrypted = cipher.update(otp, 'utf8', 'hex');
+            encrypted += cipher.final('hex');
+            // Return both IV and encrypted data
+            resolve({ iv: iv.toString('hex'), encryptedData: encrypted });
+        } catch (error) {
+            reject(new Error('Encryption failed: ' + error.message));
+        }
+    });
+};
 
 export async function generateOtp() {
     try {
@@ -88,9 +116,6 @@ export async function parameterfilter(code, parameterArray) {
 };
 
 
-  
-
-    
 
 
 

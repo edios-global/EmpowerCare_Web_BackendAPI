@@ -6,9 +6,9 @@ import { v4 as uuidv4 } from 'uuid';
 const User = sequelize.define('Users', {
   ID: {
     type: DataTypes.UUID,
-defaultValue: uuidv4, // Automatically generate a UUID for new records
-primaryKey: true, Set 
-},
+    defaultValue: uuidv4, // Automatically generate a UUID for new records
+    primaryKey: true, Set
+  },
   FIRST_NAME: DataTypes.STRING,
   LAST_NAME: DataTypes.STRING,
   USER_STATUS: DataTypes.STRING,
@@ -18,31 +18,31 @@ primaryKey: true, Set
   PROFILE_STATUS: DataTypes.STRING,
   USER_TYPE: DataTypes.STRING,
   PASSWORD: DataTypes.STRING,
-  RECORD_TYPE:{
+  RECORD_TYPE: {
     type: DataTypes.STRING,
-defaultValue: 'I', // Automatically generate a UUID for new records
+    defaultValue: 'I', // Automatically generate a UUID for new records
 
-},
-CREATED_BY: DataTypes.STRING,
-CREATED_DATE: {
+  },
+  CREATED_BY: DataTypes.STRING,
+  CREATED_DATE: {
     type: DataTypes.DATE,
-defaultValue: new Date(), // Automatically generate a UUID for new records
+    defaultValue: new Date(), // Automatically generate a UUID for new records
 
-},
+  },
 
-LAST_MODIFIED_BY: DataTypes.STRING,
-LAST_MODIFIED_DATE:   {
+  LAST_MODIFIED_BY: DataTypes.STRING,
+  LAST_MODIFIED_DATE: {
     type: DataTypes.DATE,
-defaultValue: new Date(), // Automatically generate a UUID for new records
+    defaultValue: new Date(), // Automatically generate a UUID for new records
 
-},
+  },
 
 
 });
 
 (async () => {
   await sequelize.sync();
-  // Code here
+
 })();
 
 export default User
