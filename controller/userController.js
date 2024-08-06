@@ -35,7 +35,6 @@ export const addUser = asyncHandler(async (req, res) => {
                 return res.status(202).json({ STATUS: false, MESSAGE: "Mobile Number already exist", OUTPUT: [] });
             }
 
-
             const otp = await generateOtp();
             userData.MOBILE_OTP = otp;
             const insertUser = await User.create(userData);
@@ -54,6 +53,46 @@ export const addUser = asyncHandler(async (req, res) => {
     }
 
 });
+
+
+export const addOnboardWizardDetail = asyncHandler(async (req, res) => {
+    try {
+        const { USER_ID, JOBROLE_NAME, SPECAILITY_LIST } = req.body;
+        console.log("Request Body:", req.body);
+
+        if (!USER_ID || !JOBROLE_NAME || !SPECAILITY_LIST) {
+            return res.status(202).json({ STATUS: false, MESSAGE: "PARAMETER_MISSING", OUTPUT: [] });
+        }
+        const user = await User.findOne({ where: { ID: 'fbffe962-9426-4ca6-ae2e-fcf8081cf6f2' } });
+
+        if (!user.toJSON()) {
+            console.log("User not found");
+            return res.status(404).json({ STATUS: false, MESSAGE: "User not found", OUTPUT: [] });
+        }
+        console.log("User Data:", user);
+
+        const updateData = {
+            JOBROLE_NAME: JOBROLE_NAME || user.JOBROLE_NAME,
+            SPECAILITY_LIST: SPECAILITY_LIST || user.SPECAILITY_LIST,
+        };
+        const updated = await User.update(updateData, {
+            where: { ID: 'fbffe962-9426-4ca6-ae2e-fcf8081cf6f2' },
+            returning: true
+        });
+        console.log("updated==>", updated)
+
+        if (updated) {
+            const updatedUser = await User.findOne({ where: { ID: 'fbffe962-9426-4ca6-ae2e-fcf8081cf6f2' } });
+            return res.status(200).json({ STATUS: true, MESSAGE: "User updated successfully", OUTPUT: updatedUser });
+        } else {
+            return res.status(400).json({ STATUS: false, MESSAGE: "Update failed", OUTPUT: [] });
+        }
+    } catch (error) {
+        console.log("Error:", error);
+        return res.status(500).json({ STATUS: false, MESSAGE: error.message, OUTPUT: [] });
+    }
+});
+
 
 export const OTPVerification = asyncHandler(async (req, res) => {
     try {
