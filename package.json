@@ -1,7 +1,7 @@
 {
   "name": "empower-care",
   "version": "1.0.0",
-  "description": "Heath care Product",
+  "description": "Health care Product",
   "main": "server.js",
   "type": "module",
   "scripts": {
