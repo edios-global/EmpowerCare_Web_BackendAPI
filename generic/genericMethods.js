@@ -27,15 +27,21 @@ export async function generateTempPassword() {
 
 export async function encryptPassword(password) {
     try {
-        var iv = CryptoJS.enc.Hex.parse("");
+        // Generate a random IV (16 bytes for AES)
+        var iv = CryptoJS.lib.WordArray.random(16);
+
+        // Use your environment variable for the key
         const key = CryptoJS.enc.Hex.parse(process.env.ENCRYPTION_SEED_KEY);
-        var encryptedPassword = CryptoJS.AES.encrypt(password, key, { iv: iv }).toString();
-        return encryptedPassword;
+
+        // Encrypt the password using the AES algorithm
+        var encryptedPassword = CryptoJS.AES.encrypt(password, key, { iv: iv });
+        var encryptedDataWithIv = iv.toString() + encryptedPassword.toString();
+        return encryptedDataWithIv;
     } catch (error) {
         console.log("Catch in encryptPassword==", error);
+        throw error;  // Re-throw the error for handling in calling code
     }
 };
-
 export const encryptOtp = async (otp) => {
     return new Promise((resolve, reject) => {
         try {
