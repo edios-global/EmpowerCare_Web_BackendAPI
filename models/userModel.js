@@ -58,22 +58,22 @@ import crypto from 'crypto';
 const SECRET_KEY = crypto.randomBytes(32);
 const IV_LENGTH = 16;
 
-function encryptOTP(otp) {
-  const iv = crypto.randomBytes(IV_LENGTH);
-  const cipher = crypto.createCipheriv('aes-256-cbc', SECRET_KEY, iv);
-  let encrypted = cipher.update(otp, 'utf8', 'hex');
-  encrypted += cipher.final('hex');
-  return iv.toString('hex') + ':' + encrypted;
-}
+// function encryptOTP(otp) {
+//   const iv = crypto.randomBytes(IV_LENGTH);
+//   const cipher = crypto.createCipheriv('aes-256-cbc', SECRET_KEY, iv);
+//   let encrypted = cipher.update(otp, 'utf8', 'hex');
+//   encrypted += cipher.final('hex');
+//   return iv.toString('hex') + ':' + encrypted;
+// }
 
-function decryptOTP(encryptedOtp) {
-  const [ivHex, encryptedText] = encryptedOtp.split(':');
-  const iv = Buffer.from(ivHex, 'hex');
-  const decipher = crypto.createDecipheriv('aes-256-cbc', SECRET_KEY, iv);
-  let decrypted = decipher.update(encryptedText, 'hex', 'utf8');
-  decrypted += decipher.final('utf8');
-  return decrypted;
-}
+// function decryptOTP(encryptedOtp) {
+//   const [ivHex, encryptedText] = encryptedOtp.split(':');
+//   const iv = Buffer.from(ivHex, 'hex');
+//   const decipher = crypto.createDecipheriv('aes-256-cbc', SECRET_KEY, iv);
+//   let decrypted = decipher.update(encryptedText, 'hex', 'utf8');
+//   decrypted += decipher.final('utf8');
+//   return decrypted;
+// }
 
 const User = sequelize.define('Users', {
   ID: {
@@ -90,14 +90,6 @@ const User = sequelize.define('Users', {
   PROFILE_STATUS: DataTypes.STRING,
   USER_TYPE: DataTypes.STRING,
   PASSWORD: DataTypes.STRING,
-  // LICENSE_NUMBER: DataTypes.STRING,
-  // LICENSE_TYPE: DataTypes.STRING,
-  // LICENSE_ISSUE_DATE: {
-  //   type: DataTypes.DATE,
-  // },
-  // LICENSE_EXPIRE_DATE: {
-  //   type: DataTypes.DATE,
-  // },
   // SPECAILITY_ID: {
   //   type: DataTypes.INTEGER,
   //   allowNull: true, // Set to true if you want the field to be optional
@@ -106,42 +98,57 @@ const User = sequelize.define('Users', {
   //   type: DataTypes.INTEGER,
   //   allowNull: true, // Set to true if you want the field to be optional
   // },
-  // REFERENCE_FIRST_NAME: DataTypes.STRING,
-  // REFERENCE_LAST_NAME: DataTypes.STRING,
-  // REFERENCE_EMAIL_ADDRESS: DataTypes.STRING,
-  // REFERENCE_FACILITY_NAME: DataTypes.STRING,
-  // REFERENCE_WORKING_FROM_DATE: {
-  //   type: DataTypes.DATE,
-  // },
-  // REFERENCE_WORKING_TO_DATE: {
-  //   type: DataTypes.DATE,
-  // },
-  // REFERENCE_CONTRACT: DataTypes.STRING,
-  // STREET_ADDRESS: DataTypes.STRING,
-  // LONGITUDE: DataTypes.STRING,
-  // LATITUDE: DataTypes.STRING,
-  // CITY: DataTypes.STRING,
-  // STATE: DataTypes.STRING,
-  // ZIPCODE: DataTypes.STRING,
-  // CHILD_USER_ID: {
-  //   type: DataTypes.INTEGER,
-  //   allowNull: true, // Set to true if you want the field to be optional
-  // },
-  // ROLE_ID: {
-  //   type: DataTypes.INTEGER,
-  //   allowNull: true, // Set to true if you want the field to be optional
-  // },
-  // PROFILE_STATUS: DataTypes.STRING,
-  // PREFFERED_AREA_OF_WORK: DataTypes.STRING,
-  // PREFFERED_WORK_TYPE: DataTypes.STRING,
-
   JOBROLE_NAME: {
     type: DataTypes.STRING,
-    // allowNull: false,
-
   },
   SPECAILITY_LIST: {
     type: DataTypes.ARRAY(DataTypes.STRING),
+  },
+  LICENSE_STATE: DataTypes.STRING,
+  LICENSE_NUMBER: DataTypes.STRING,
+  LICENSE_TYPE: DataTypes.STRING,
+  LICENSE_ISSUE_DATE: {
+    type: DataTypes.DATE,
+  },
+  LICENSE_EXPIRE_DATE: {
+    type: DataTypes.DATE,
+  },
+  PREFERRED_AREA_OF_WORK: DataTypes.STRING,
+  PREFERRED_WORK_TYPE: DataTypes.STRING,
+  EXP_JOBROLE_NAME: DataTypes.STRING,
+  EXP_SPECIALTY_LIST: DataTypes.STRING,
+  EXP_FACILITY_NAME: DataTypes.STRING,
+  EXP_FROM_DATE: {
+    type: DataTypes.DATE,
+  },
+  EXP_TO_DATE: {
+    type: DataTypes.DATE,
+  },
+  REFERENCE_FIRST_NAME: DataTypes.STRING,
+  REFERENCE_LAST_NAME: DataTypes.STRING,
+  REFERENCE_EMAIL_ADDRESS: DataTypes.STRING,
+  REFERENCE_FACILITY_NAME: DataTypes.STRING,
+  REFERENCE_WORKING_FROM_DATE: {
+    type: DataTypes.DATE,
+  },
+  REFERENCE_WORKING_TO_DATE: {
+    type: DataTypes.DATE,
+  },
+  REFERENCE_CONTRACT: DataTypes.STRING,
+  REFERENCE_CONSENT: DataTypes.BOOLEAN,
+  STREET_ADDRESS: DataTypes.STRING,
+  LONGITUDE: DataTypes.STRING,
+  LATITUDE: DataTypes.STRING,
+  CITY: DataTypes.STRING,
+  STATE: DataTypes.STRING,
+  ZIPCODE: DataTypes.STRING,
+  CHILD_USER_ID: {
+    type: DataTypes.INTEGER,
+    // allowNull: true, // Set to true if you want the field to be optional
+  },
+  ROLE_ID: {
+    type: DataTypes.INTEGER,
+    //   allowNull: true, // Set to true if you want the field to be optional
   },
   RECORD_TYPE: {
     type: DataTypes.STRING,
@@ -157,56 +164,56 @@ const User = sequelize.define('Users', {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW,
   },
-}, {
-  hooks: {
-    beforeCreate: async (user, options) => {
-      if (user.PASSWORD) {
-        const saltRounds = 10;
-        user.PASSWORD = await bcrypt.hash(user.PASSWORD, saltRounds);
-      }
+  // }, {
+  //   hooks: {
+  //     beforeCreate: async (user, options) => {
+  //       if (user.PASSWORD) {
+  //         const saltRounds = 10;
+  //         user.PASSWORD = await bcrypt.hash(user.PASSWORD, saltRounds);
+  //       }
 
-      if (user.MOBILE_OTP) {
-        user.MOBILE_OTP = encryptOTP(user.MOBILE_OTP);
-      }
-    },
-    beforeUpdate: async (user, options) => {
-      if (user.MOBILE_OTP) {
-        user.MOBILE_OTP = encryptOTP(user.MOBILE_OTP);
-      }
-    },
-    afterFind: (results) => {
-      if (Array.isArray(results)) {
-        results.forEach(user => {
-          if (user.MOBILE_OTP) {
-            user.MOBILE_OTP = decryptOTP(user.MOBILE_OTP);
-          }
-        });
-      } else if (results && results.MOBILE_OTP) {
-        results.MOBILE_OTP = decryptOTP(results.MOBILE_OTP);
-      }
-    },
-  },
+  //       if (user.MOBILE_OTP) {
+  //         user.MOBILE_OTP = encryptOTP(user.MOBILE_OTP);
+  //       }
+  //     },
+  //     beforeUpdate: async (user, options) => {
+  //       if (user.MOBILE_OTP) {
+  //         user.MOBILE_OTP = encryptOTP(user.MOBILE_OTP);
+  //       }
+  //     },
+  //     afterFind: (results) => {
+  //       if (Array.isArray(results)) {
+  //         results.forEach(user => {
+  //           if (user.MOBILE_OTP) {
+  //             user.MOBILE_OTP = decryptOTP(user.MOBILE_OTP);
+  //           }
+  //         });
+  //       } else if (results && results.MOBILE_OTP) {
+  //         results.MOBILE_OTP = decryptOTP(results.MOBILE_OTP);
+  //       }
+  //     },
+  //   },
 });
 
-User.prototype.comparePassword = async function (plainPassword) {
-  return await bcrypt.compare(plainPassword, this.PASSWORD);
-};
+// User.prototype.comparePassword = async function (plainPassword) {
+//   return await bcrypt.compare(plainPassword, this.PASSWORD);
+// };
 
-export async function authenticateUser(email, plainPassword) {
-  try {
-    const user = await User.findOne({ where: { EMAIL_ADDRESS: email } });
-    if (user && await user.comparePassword(plainPassword)) {
-      console.log('Authentication successful');
-      return user;
-    } else {
-      console.log('Authentication failed');
-      return null;
-    }
-  } catch (error) {
-    console.error('Error authenticating user:', error);
-    throw error;
-  }
-}
+// export async function authenticateUser(email, plainPassword) {
+//   try {
+//     const user = await User.findOne({ where: { EMAIL_ADDRESS: email } });
+//     if (user && await user.comparePassword(plainPassword)) {
+//       console.log('Authentication successful');
+//       return user;
+//     } else {
+//       console.log('Authentication failed');
+//       return null;
+//     }
+//   } catch (error) {
+//     console.error('Error authenticating user:', error);
+//     throw error;
+//   }
+// }
 
 (async () => {
   await sequelize.sync();
