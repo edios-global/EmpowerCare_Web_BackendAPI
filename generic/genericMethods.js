@@ -14,6 +14,27 @@ export const generateOtpDigits = async () => {
     });
 };
 
+export async function generateTempPassword() {
+    try {
+        return new Promise(resolve => {
+            const password = otpGenerator.generate(8, { digits: true, lowerCaseAlphabets: true, upperCaseAlphabets: true, specialChars: true })
+            resolve(password);
+        });
+    } catch (error) {
+        console.log("Catch in generatePassword==", error);
+    }
+};
+
+export async function encryptPassword(password) {
+    try {
+        var iv = CryptoJS.enc.Hex.parse("");
+        const key = CryptoJS.enc.Hex.parse(process.env.ENCRYPTION_SEED_KEY);
+        var encryptedPassword = CryptoJS.AES.encrypt(password, key, { iv: iv }).toString();
+        return encryptedPassword;
+    } catch (error) {
+        console.log("Catch in encryptPassword==", error);
+    }
+};
 
 export const encryptOtp = async (otp) => {
     return new Promise((resolve, reject) => {
