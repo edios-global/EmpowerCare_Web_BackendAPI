@@ -1,6 +1,7 @@
 import asyncHandler from 'express-async-handler'
 import User from "../models/userModel.js";
 import { generateOtp } from '../generic/genericMethods.js';
+import States from '../models/stateModel.js';
 
 export const validateUserEmail = asyncHandler(async (req, res) => {
     try {
@@ -117,5 +118,17 @@ export const OTPVerification = asyncHandler(async (req, res) => {
 });
 
 
+export const getAllState = asyncHandler(async (req, res) => {
+    try {
 
+        const fetchStates = await States.findAll({ attributes: ['ID', 'STATE_NAME'] });
+        const statesData = fetchStates.map(state => state.dataValues);
+
+        return res.status(200).json({ STATUS: true, MESSAGE: "Fetched States Successfully", OUTPUT: statesData })
+    } catch (error) {
+        console.log("GET STATES error: ", error);
+
+        return res.status(404).json({ STATUS: false, MESSAGE: error.message, OUTPUT: [] })
+    }
+})
 
