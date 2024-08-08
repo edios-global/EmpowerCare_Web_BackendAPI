@@ -1,7 +1,7 @@
 
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
-
+import fs from 'fs';
 const otpGenerator = require('otp-generator')
 var CryptoJS = require("crypto-js");
 const crypto = require('crypto');
@@ -136,7 +136,53 @@ export async function parameterfilter(code, parameterArray) {
     });
 };
 
+export async function uploadFile(req, imagePrefix, subfolderNameKey, mainFolderName = null) {
+    return new Promise(resolve => {
+        try {
+            let fileURL = process.env.LOCATION_PATH;
+            const fs = require("fs")
+            const subfolderName = req.body[subfolderNameKey]; // Using dynamic key
+            console.log("subfolderName==", subfolderName);
+            if (mainFolderName) {
+                fileURL = fileURL + mainFolderName + "/"; // Append the main folder name to the base path
+            }
+            fileURL = fileURL + subfolderName;
+            const newpath = fileURL + "/";
+            const file = req?.files?.file; // Check if the file object exists
+            let fileObj = req.files?.file;
+            let onlyFileName = imagePrefix;
+            let currentDate = new Date();
+            onlyFileName = onlyFileName + "_" + currentDate.getDate() + (currentDate.getMonth() + 1) + currentDate.getFullYear() + "_" + currentDate.getTime();
 
+            let ext = fileObj.name.substring(fileObj.name.indexOf(".", 2), fileObj.size);
+            let newFileName = onlyFileName + ext;
+            fs.access(fileURL, async function (error) {
+                if (error) {
+                    fs.mkdir(fileURL, { recursive: true }, (err) => {
+                        if (err) throw err;
+                    });
+                };
+                if (file) { // Check if the file object exists before moving the file
+                    if (!fs.existsSync(newpath)) {
+                        fs.mkdirSync(newpath, { recursive: true }); // Create the directory if it does not exist
+                    }
+                    file.mv(`${newpath}${newFileName}`, (err) => {
+                        if (err) {
+                            resolve(err);
+                        } else {
+                            let returnedFileName = mainFolderName ? mainFolderName + "/" + subfolderName + "/" + newFileName : subfolderName + "/" + newFileName;
+                            resolve(returnedFileName);
+                        }
+                    });
+                } else {
+                    resolve('File object is undefined.');
+                }
+            });
+        } catch (catchederror) {
+            console.log("Error in uploadFile:", catchederror);
+        }
+    });
+};
 
 
 

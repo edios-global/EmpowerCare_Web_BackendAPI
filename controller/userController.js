@@ -41,7 +41,6 @@ export const addUser = asyncHandler(async (req, res) => {
             const otp = await generateOtp();
             userData.MOBILE_OTP = otp;
             const insertUser = await User.create(userData);
-            console.log("insertUser", insertUser);
             if (insertUser.ID !== null) {
                 return res.status(200).json({ STATUS: true, MESSAGE: "USER INSERT SUCCESSFUL", OUTPUT: { USER_ID: insertUser.ID } });
             } else {
@@ -78,26 +77,26 @@ export const addOnboardWizardDetail = asyncHandler(async (req, res) => {
         const updateData = {
             FILE_NAME,
             JOBROLE_NAME,
-            SPECIALTY_LIST: JSON.stringify(SPECIALTY_LIST),  // Store as JSON if the column type is TEXT or JSON
             LICENSE_STATE,
             LICENSE_TYPE,
             LICENSE_NUMBER,
             LICENSE_ISSUE_DATE,
             LICENSE_EXPIRE_DATE,
+            SPECIALTY_LIST: JSON.stringify(SPECIALTY_LIST),  // Store as JSON if the column type is TEXT or JSON
             PREFERRED_AREA_OF_WORK: JSON.stringify(PREFERRED_AREA_OF_WORK),
             PREFERRED_WORK_TYPE: JSON.stringify(PREFERRED_WORK_TYPE),
-            EXP_JOBROLE_NAME,
-            EXP_FACILITY_NAME,
-            EXP_FROM_DATE,
-            EXP_TO_DATE,
-            EXP_SPECIALTY_LIST: JSON.stringify(EXP_SPECIALTY_LIST),
-            REFERENCE_FIRST_NAME,
-            REFERENCE_LAST_NAME,
-            REFERENCE_EMAIL_ADDRESS,
-            REFERENCE_FACILITY_NAME,
-            REFERENCE_WORKING_FROM_DATE,
-            REFERENCE_WORKING_TO_DATE,
-            REFERENCE_CONSENT,
+            EXP_JOBROLE_NAME: EXP_JOBROLE_NAME || '',
+            EXP_FACILITY_NAME: EXP_FACILITY_NAME || '',
+            EXP_FROM_DATE: EXP_FROM_DATE || null,
+            EXP_TO_DATE: EXP_TO_DATE || null,
+            EXP_SPECIALTY_LIST: EXP_SPECIALTY_LIST || null,
+            REFERENCE_FIRST_NAME: REFERENCE_FIRST_NAME || '',
+            REFERENCE_LAST_NAME: REFERENCE_LAST_NAME || '',
+            REFERENCE_EMAIL_ADDRESS: REFERENCE_EMAIL_ADDRESS || '',
+            REFERENCE_FACILITY_NAME: REFERENCE_FACILITY_NAME || '',
+            REFERENCE_WORKING_FROM_DATE: REFERENCE_WORKING_FROM_DATE || null,
+            REFERENCE_WORKING_TO_DATE: REFERENCE_WORKING_TO_DATE || null,
+            REFERENCE_CONSENT: REFERENCE_CONSENT || false,
             STREET_ADDRESS: STREET_ADDRESS || ADDRESS_COMPONENTS.STREET,
             STATE: ADDRESS_COMPONENTS.STATE,
             COUNTRY: ADDRESS_COMPONENTS.COUNTRY,
