@@ -14,11 +14,13 @@ export const validateUserEmail = asyncHandler(async (req, res) => {
         const user = await User.findOne({ where: { EMAIL_ADDRESS } });
 
         if (user) {
-            return res.status(200).json({ STATUS: true, MESSAGE: "ALREADY_EXIST", OUTPUT: [] });
+            return res.status(200).json({ STATUS: false, MESSAGE: "ALREADY_EXIST", OUTPUT: [] });
         }
 
-        return res.status(200).json({ STATUS: false, MESSAGE: "NOT_EXIST", OUTPUT: [] });
+        return res.status(200).json({ STATUS: true, MESSAGE: "NOT_EXIST", OUTPUT: [] });
     } catch (error) {
+        console.log("Verify Address Error:", error);
+
         return res.status(500).json({ STATUS: false, MESSAGE: error.message, OUTPUT: [] });
     }
 });
@@ -58,10 +60,11 @@ export const addUser = asyncHandler(async (req, res) => {
 
 export const addOnboardWizardDetail = asyncHandler(async (req, res) => {
     try {
-        const { USER_ID, JOBROLE_NAME, SPECAILITY_LIST, LICENSE_STATE, LICENSE_NUMBER, LICENSE_TYPE, LICENSE_ISSUE_DATE, LICENSE_EXPIRE_DATE, PREFERRED_AREA_OF_WORK, PREFERRED_WORK_TYPE, EXP_JOBROLE_NAME, EXP_SPECIALTY_LIST, EXP_FACILITY_NAME, EXP_FROM_DATE, EXP_TO_DATE, REFERENCE_FIRST_NAME, REFERENCE_LAST_NAME, REFERENCE_EMAIL_ADDRESS, REFERENCE_FACILITY_NAME, REFERENCE_WORKING_FROM_DATE, REFERENCE_WORKING_TO_DATE, REFERENCE_CONTRACT, REFERENCE_CONSENT, STREET_ADDRESS, LONGITUDE, LATITUDE, CITY, STATE, ZIPCODE, CHILD_USER_ID, ROLE_ID } = req.body;
-        console.log("Request Body:", req.body);
 
-        if (!USER_ID || !JOBROLE_NAME || !SPECAILITY_LIST) {
+        const { USER_ID, JOBROLE_NAME, SPECIALTY_LIST, LICENSE_STATE, LICENSE_NUMBER, LICENSE_TYPE, LICENSE_ISSUE_DATE, LICENSE_EXPIRE_DATE, FILE_NAME, PREFERRED_AREA_OF_WORK, PREFERRED_WORK_TYPE, EXP_JOBROLE_NAME, EXP_SPECIALTY_LIST, EXP_FACILITY_NAME, EXP_FROM_DATE, EXP_TO_DATE, REFERENCE_FIRST_NAME, REFERENCE_LAST_NAME, REFERENCE_EMAIL_ADDRESS, REFERENCE_FACILITY_NAME, REFERENCE_WORKING_FROM_DATE, REFERENCE_WORKING_TO_DATE, REFERENCE_CONSENT, STREET_ADDRESS, LONGITUDE, LATITUDE, CITY, STATE, ZIPCODE, CHILD_USER_ID, ROLE_ID } = req.body;
+        console.log("Request Body:", req.body);
+        return;
+        if (!USER_ID || !JOBROLE_NAME || !SPECIALTY_LIST) {
             return res.status(202).json({ STATUS: false, MESSAGE: "PARAMETER_MISSING", OUTPUT: [] });
         }
         const user = await User.findOne({ where: { ID: 'fbffe962-9426-4ca6-ae2e-fcf8081cf6f2' } });
@@ -74,7 +77,7 @@ export const addOnboardWizardDetail = asyncHandler(async (req, res) => {
 
         const updateData = {
             JOBROLE_NAME: JOBROLE_NAME || user.JOBROLE_NAME,
-            SPECAILITY_LIST: SPECAILITY_LIST || user.SPECAILITY_LIST,
+            SPECIALTY_LIST: SPECIALTY_LIST || user.SPECIALTY_LIST,
             LICENSE_STATE: LICENSE_STATE || user.LICENSE_STATE,
             LICENSE_NUMBER: LICENSE_NUMBER || user.LICENSE_NUMBER,
             LICENSE_TYPE: LICENSE_TYPE || user.LICENSE_TYPE,
