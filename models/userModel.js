@@ -101,7 +101,7 @@ const User = sequelize.define('Users', {
   JOBROLE_NAME: {
     type: DataTypes.STRING,
   },
-  SPECAILTY_LIST: {
+  SPECIALTY_LIST: {
     type: DataTypes.ARRAY(DataTypes.STRING),
   },
   LICENSE_STATE: DataTypes.STRING,
