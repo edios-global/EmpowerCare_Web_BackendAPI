@@ -5,7 +5,7 @@ import { addUser, getAllState, OTPVerification, validateUserEmail, addOnboardWiz
 const router = express.Router()
 
 router.post('/addUser', addUser);
-router.patch('/user', addOnboardWizardDetail);
+router.put('/user', addOnboardWizardDetail);
 router.post('/validateUserEmail', validateUserEmail);
 router.post('/verifyOtp', OTPVerification);
 router.put('/addOnboardWizardDetail', addOnboardWizardDetail);
