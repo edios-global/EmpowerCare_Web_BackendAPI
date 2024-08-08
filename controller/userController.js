@@ -1,6 +1,6 @@
 import asyncHandler from 'express-async-handler'
 import User from "../models/userModel.js";
-import { generateOtp } from '../generic/genericMethods.js';
+import { encryptPassword, generateOtp, generateTempPassword } from '../generic/genericMethods.js';
 import States from '../models/stateModel.js';
 
 export const validateUserEmail = asyncHandler(async (req, res) => {
@@ -63,7 +63,7 @@ export const addOnboardWizardDetail = asyncHandler(async (req, res) => {
 
         const { USER_ID, JOBROLE_NAME, SPECIALTY_LIST, LICENSE_STATE, LICENSE_NUMBER, LICENSE_TYPE, LICENSE_ISSUE_DATE, LICENSE_EXPIRE_DATE, FILE_NAME, PREFERRED_AREA_OF_WORK, PREFERRED_WORK_TYPE, EXP_JOBROLE_NAME, EXP_SPECIALTY_LIST, EXP_FACILITY_NAME, EXP_FROM_DATE, EXP_TO_DATE, REFERENCE_FIRST_NAME, REFERENCE_LAST_NAME, REFERENCE_EMAIL_ADDRESS, REFERENCE_FACILITY_NAME, REFERENCE_WORKING_FROM_DATE, REFERENCE_WORKING_TO_DATE, REFERENCE_CONSENT, STREET_ADDRESS, LONGITUDE, LATITUDE, CITY, STATE, ZIPCODE, CHILD_USER_ID, ROLE_ID } = req.body;
         console.log("Request Body:", req.body);
-        return;
+
         if (!USER_ID || !JOBROLE_NAME || !SPECIALTY_LIST) {
             return res.status(202).json({ STATUS: false, MESSAGE: "PARAMETER_MISSING", OUTPUT: [] });
         }
@@ -119,6 +119,45 @@ export const addOnboardWizardDetail = asyncHandler(async (req, res) => {
         } else {
             return res.status(400).json({ STATUS: false, MESSAGE: "Update failed", OUTPUT: [] });
         }
+    } catch (error) {
+        console.log("Error:", error);
+        return res.status(500).json({ STATUS: false, MESSAGE: error.message, OUTPUT: [] });
+    }
+});
+
+
+export const forgotPassword = asyncHandler(async (req, res) => {
+    try {
+        const { EMAIL_ADDRESS } = req.body;
+
+        if (!EMAIL_ADDRESS) {
+            return res.status(202).json({ STATUS: false, MESSAGE: "PARAMETER_MISSING", OUTPUT: [] });
+        }
+
+        const user = await User.findOne({ where: { ID: 'fbffe962-9426-4ca6-ae2e-fcf8081cf6f2', EMAIL_ADDRESS } })
+        if (!user) {
+            return res.status(404).json({ STATUS: false, MESSAGE: "user not Found", OUTPUT: [] })
+        }
+
+        const tempPassword = await generateTempPassword();
+        console.log("tempPassword", tempPassword);
+        const encryptedPassword = await encryptPassword(tempPassword);
+
+        const updateUser = await User.update(
+            {
+                PASSWORD: encryptedPassword,
+                USER_STATUS: "Active",
+                RECORD_TYPE: "U",
+                LAST_MODIFIED_DATE: new Date(),
+            },
+            {
+                where: { id: 'fbffe962-9426-4ca6-ae2e-fcf8081cf6f2' },
+            }
+        );
+        if (updateUser) {
+            return res.status(404).json({ STATUS: false, MESSAGE: "Password reset succesfully ", OUTPUT: updateUser })
+        }
+
     } catch (error) {
         console.log("Error:", error);
         return res.status(500).json({ STATUS: false, MESSAGE: error.message, OUTPUT: [] });
