@@ -3,6 +3,7 @@ import express from 'express'
 import cors from 'cors'
 import userRouter from './routes/userRoute.js'
 import dotenv from 'dotenv';
+import MenuOption from './models/menuOptionModel.js';
 dotenv.config();
 const app = express()
 app.use(bodyParser.json())
@@ -17,7 +18,35 @@ app.use((err, req, res, next) => {
     message,
   });
 });
-app.use("/", (req, res) => {
+app.use("/addMy", (req, res) => {
+
+
+  MenuOption.bulkCreate([{
+    MENU_NAME: 'Manage Users',
+    USER_TYPE: 'Admin',
+    SCREEN_NAME: 'Manage Users'
+  },
+  {
+    MENU_NAME: 'Manage Profile Criteria',
+    USER_TYPE: 'Admin',
+    SCREEN_NAME: 'Manage Profile Criteria'
+  },
+  
+  {
+    MENU_NAME: 'Manage Facilities',
+    USER_TYPE: 'Admin',
+    SCREEN_NAME: 'Manage Facilities'
+  },
+  {
+    MENU_NAME: 'Billing',
+    USER_TYPE: 'Admin',
+    SCREEN_NAME: 'Billing'
+  },
+
+
+])
+
+
   res.send('<h1>Server Running <h1>')
 });
 export default app

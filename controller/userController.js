@@ -93,3 +93,19 @@ export const getAllState = asyncHandler(async (req, res) => {
     }
 })
 
+export const loginUser = asyncHandler(async (req, res) => {
+    try {
+
+        console.log("adsad" , req.body)
+
+        return res.status(200).json({ STATUS: true, MESSAGE: "Fetched States Successfully", OUTPUT: [] })
+    } catch (error) {
+        console.log("GET STATES error: ", error);
+
+        return res.status(404).json({ STATUS: false, MESSAGE: error.message, OUTPUT: [] })
+    }
+})
+
+
+
+
