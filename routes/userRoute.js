@@ -1,12 +1,16 @@
 
 import express from 'express'
-import { addUser, getAllState, loginUser, OTPVerification, validateUserEmail } from '../controller/userController.js'
+import { addUser, getAllState, OTPVerification, validateUserEmail, addOnboardWizardDetail, loginUser } from '../controller/userController.js'
+
 const router = express.Router()
 
 router.post('/addUser', addUser);
+router.patch('/user', addOnboardWizardDetail);
 router.post('/validateUserEmail', validateUserEmail);
 router.post('/verifyOtp', OTPVerification);
+router.put('/addOnboardWizardDetail', addOnboardWizardDetail);
 router.post('/fetchStates', getAllState);
 router.post('/loginUser', loginUser);
+
 
 export default router

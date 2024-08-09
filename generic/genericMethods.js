@@ -1,6 +1,9 @@
 
 import { createRequire } from 'module';
+import User from '../models/userModel.js';
 const require = createRequire(import.meta.url);
+import jwt from 'jsonwebtoken'
+import bcrypt from 'bcryptjs';
 
 const otpGenerator = require('otp-generator')
 var CryptoJS = require("crypto-js");
@@ -117,5 +120,31 @@ export async function parameterfilter(code, parameterArray) {
 
 
 
+export async function authenticateUser(email, plainPassword) {
+    try {
+  
+     
+      const user = await User.findOne({ where: { EMAIL_ADDRESS: email } });
 
+    //   console.log("user" , user)
+    //   return
+      let data = user?.toJSON()
+      console.log("  bcrypt.compareSync(plainPassword, data.PASSWORD)") ,   bcrypt.compareSync(plainPassword, data.PASSWORD)
+      if (user &&  bcrypt.compareSync(plainPassword, data.PASSWORD) ) {
+        console.log('Authentication successful');
+        var token =  await jwt.sign({ID: data.ID }, "EmpowerCare7060", { expiresIn: "24h" })
+        if(token){
+            data.token = token
+            return data;
+        }
+       return false
+      } else {
+        console.log('Authentication failed');
+        return null;
+      }
+    } catch (error) {
+      console.error('Error authenticating user:', error);
+      throw error;
+    }
+  }
 

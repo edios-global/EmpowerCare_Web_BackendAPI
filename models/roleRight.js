@@ -1,0 +1,53 @@
+import { Sequelize, DataTypes } from 'sequelize';
+import { sequelize } from '../dbConfig/dbConfig.js';
+import { v4 as uuidv4 } from 'uuid';
+import User from './userModel.js';
+
+
+
+const RoleRights = sequelize.define('role_rights', {
+    ID: {
+        type: DataTypes.UUID,
+    defaultValue: uuidv4, // Automatically generate a UUID for new records
+    primaryKey: true, Set 
+    },
+    USER_ID: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+          model: User,
+          key: 'ID',
+        },
+      },
+    MENU_OPTION_ID: DataTypes.STRING,
+    MENU_NAME: DataTypes.STRING,
+    RECORD_TYPE:{
+        type: DataTypes.STRING,
+    defaultValue: 'I', // Automatically generate a UUID for new records
+
+    },
+    CREATED_BY: DataTypes.STRING,
+    CREATED_DATE: {
+        type: DataTypes.DATE,
+    defaultValue: new Date(), // Automatically generate a UUID for new records
+    
+    },
+    LAST_MODIFIED_BY: DataTypes.STRING,
+    LAST_MODIFIED_DATE:   {
+        type: DataTypes.DATE,
+    defaultValue: new Date(), // Automatically generate a UUID for new records
+    
+    },
+    
+
+});
+
+(async () => {
+    await sequelize.sync();
+    // Code here
+})();
+
+
+RoleRights.belongsTo(User, { foreignKey: 'USER_ID' });
+User.hasMany(RoleRights, { foreignKey: 'USER_ID' })
+export default RoleRights

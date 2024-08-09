@@ -4,11 +4,13 @@ import cors from 'cors'
 import userRouter from './routes/userRoute.js'
 import dotenv from 'dotenv';
 import MenuOption from './models/menuOptionModel.js';
+import multiUserPermissionController from './routes/multiUserPermissionRoutes.js'
 dotenv.config();
 const app = express()
 app.use(bodyParser.json())
 app.use(cors())
 app.use('/api', userRouter);
+app.use('/api/mu/' ,  multiUserPermissionController )
 app.use((err, req, res, next) => {
   const status = err.status || 500;
   const message = err.message || "Something Went Wrong";
