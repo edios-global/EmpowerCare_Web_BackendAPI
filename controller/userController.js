@@ -41,7 +41,6 @@ export const addUser = asyncHandler(async (req, res) => {
             const otp = await generateOtp();
             userData.MOBILE_OTP = otp;
             const insertUser = await User.create(userData);
-            console.log("insertUser", insertUser);
             if (insertUser.ID !== null) {
                 return res.status(200).json({ STATUS: true, MESSAGE: "USER INSERT SUCCESSFUL", OUTPUT: { USER_ID: insertUser.ID } });
             } else {
@@ -60,61 +59,77 @@ export const addUser = asyncHandler(async (req, res) => {
 
 export const addOnboardWizardDetail = asyncHandler(async (req, res) => {
     try {
+        const { USER_ID, JOBROLE_NAME, SPECIALTY_LIST, LICENSE_STATE, LICENSE_TYPE, LICENSE_NUMBER, LICENSE_ISSUE_DATE, LICENSE_EXPIRE_DATE, PREFERRED_AREA_OF_WORK, PREFERRED_WORK_TYPE, EXP_JOBROLE_NAME, EXP_FACILITY_NAME, EXP_FROM_DATE, EXP_TO_DATE, EXP_SPECIALTY_LIST, REFERENCE_FIRST_NAME, REFERENCE_LAST_NAME, REFERENCE_EMAIL_ADDRESS, REFERENCE_FACILITY_NAME, REFERENCE_WORKING_FROM_DATE, REFERENCE_WORKING_TO_DATE, REFERENCE_CONSENT, ADDRESS_COMPONENTS, STREET_ADDRESS, LONGITUDE, LATITUDE, CHILD_USER_ID, ROLE_ID } = req.body;
 
-        const { USER_ID, JOBROLE_NAME, SPECIALTY_LIST, LICENSE_STATE, LICENSE_NUMBER, LICENSE_TYPE, LICENSE_ISSUE_DATE, LICENSE_EXPIRE_DATE, FILE_NAME, PREFERRED_AREA_OF_WORK, PREFERRED_WORK_TYPE, EXP_JOBROLE_NAME, EXP_SPECIALTY_LIST, EXP_FACILITY_NAME, EXP_FROM_DATE, EXP_TO_DATE, REFERENCE_FIRST_NAME, REFERENCE_LAST_NAME, REFERENCE_EMAIL_ADDRESS, REFERENCE_FACILITY_NAME, REFERENCE_WORKING_FROM_DATE, REFERENCE_WORKING_TO_DATE, REFERENCE_CONSENT, STREET_ADDRESS, LONGITUDE, LATITUDE, CITY, STATE, ZIPCODE, CHILD_USER_ID, ROLE_ID } = req.body;
-        console.log("Request Body:", req.body);
+        const specialtyList = JSON.parse(SPECIALTY_LIST);
+        const preferredAreaOfWork = JSON.parse(PREFERRED_AREA_OF_WORK);
+        const preferredWorkType = JSON.parse(PREFERRED_WORK_TYPE);
+        const expSpecialtyList = JSON.parse(EXP_SPECIALTY_LIST);
+        const addressComponents = JSON.parse(ADDRESS_COMPONENTS);
+        const referenceConsent = REFERENCE_CONSENT === 'true';
+        const licenseIssueDate = JSON.parse(LICENSE_ISSUE_DATE);
+        const licenseExpireDate = JSON.parse(LICENSE_EXPIRE_DATE);
+        const expFromDate = JSON.parse(EXP_FROM_DATE);
+        const expToDate = JSON.parse(EXP_TO_DATE);
+        const referenceWorkingFromDate = JSON.parse(REFERENCE_WORKING_FROM_DATE);
+        const referenceWorkingToDate = JSON.parse(REFERENCE_WORKING_TO_DATE);
 
-        if (!USER_ID || !JOBROLE_NAME || !SPECIALTY_LIST) {
+
+        if (!USER_ID) {
             return res.status(202).json({ STATUS: false, MESSAGE: "PARAMETER_MISSING", OUTPUT: [] });
         }
-        const user = await User.findOne({ where: { ID: 'fbffe962-9426-4ca6-ae2e-fcf8081cf6f2' } });
+        const user = await User.findOne({ where: { ID: USER_ID } });
 
-        if (!user.toJSON()) {
+        if (!user) {
             console.log("User not found");
             return res.status(404).json({ STATUS: false, MESSAGE: "User not found", OUTPUT: [] });
         }
-        console.log("User Data:", user);
-
+        const uploadFile = {};
+        if (req.file) {
+            uploadFile.FILE_NAME = req.file.filename;
+            uploadFile.FILE_TYPE = req.file.mimetype;
+            uploadFile.FILE_PATH = req.file.destination + req.file.filename;
+        }
         const updateData = {
-            JOBROLE_NAME: JOBROLE_NAME || user.JOBROLE_NAME,
-            SPECIALTY_LIST: SPECIALTY_LIST || user.SPECIALTY_LIST,
-            LICENSE_STATE: LICENSE_STATE || user.LICENSE_STATE,
-            LICENSE_NUMBER: LICENSE_NUMBER || user.LICENSE_NUMBER,
-            LICENSE_TYPE: LICENSE_TYPE || user.LICENSE_TYPE,
-            LICENSE_ISSUE_DATE: LICENSE_ISSUE_DATE || user.LICENSE_ISSUE_DATE,
-            LICENSE_EXPIRE_DATE: LICENSE_EXPIRE_DATE || user.LICENSE_EXPIRE_DATE,
-            PREFERRED_AREA_OF_WORK: PREFERRED_AREA_OF_WORK || user.PREFERRED_AREA_OF_WORK,
-            PREFERRED_WORK_TYPE: PREFERRED_WORK_TYPE || user.PREFERRED_WORK_TYPE,
-            EXP_JOBROLE_NAME: EXP_JOBROLE_NAME || user.EXP_JOBROLE_NAME,
-            EXP_SPECIALTY_LIST: EXP_SPECIALTY_LIST || user.EXP_SPECIALTY_LIST,
-            EXP_FACILITY_NAME: EXP_FACILITY_NAME || user.EXP_FACILITY_NAME,
-            EXP_FROM_DATE: EXP_FROM_DATE || user.EXP_FROM_DATE,
-            EXP_TO_DATE: EXP_TO_DATE || user.EXP_TO_DATE,
-            REFERENCE_FIRST_NAME: REFERENCE_FIRST_NAME || user.REFERENCE_FIRST_NAME,
-            REFERENCE_LAST_NAME: REFERENCE_LAST_NAME || user.REFERENCE_LAST_NAME,
-            REFERENCE_EMAIL_ADDRESS: REFERENCE_EMAIL_ADDRESS || user.REFERENCE_EMAIL_ADDRESS,
-            REFERENCE_FACILITY_NAME: REFERENCE_FACILITY_NAME || user.REFERENCE_FACILITY_NAME,
-            REFERENCE_WORKING_FROM_DATE: REFERENCE_WORKING_FROM_DATE || user.REFERENCE_WORKING_FROM_DATE,
-            REFERENCE_WORKING_TO_DATE: REFERENCE_WORKING_TO_DATE || user.REFERENCE_WORKING_TO_DATE,
-            REFERENCE_CONTRACT: REFERENCE_CONTRACT || user.REFERENCE_CONTRACT,
-            REFERENCE_CONSENT: REFERENCE_CONSENT || user.REFERENCE_CONSENT,
-            STREET_ADDRESS: STREET_ADDRESS || user.STREET_ADDRESS,
-            LONGITUDE: LONGITUDE || user.LONGITUDE,
-            LATITUDE: LATITUDE || user.LATITUDE,
-            CITY: CITY || user.CITY,
-            STATE: STATE || user.STATE,
-            ZIPCODE: ZIPCODE || user.ZIPCODE,
-            CHILD_USER_ID: CHILD_USER_ID || user.CHILD_USER_ID,
-            ROLE_ID: ROLE_ID || user.ROLE_ID
+            FILE_NAME: uploadFile.FILE_PATH || '',
+            FILE_TYPE: uploadFile.FILE_TYPE || '',
+            FILE_PATH: uploadFile.FILE_PATH || '',
+            JOBROLE_NAME,
+            LICENSE_STATE,
+            LICENSE_TYPE,
+            LICENSE_NUMBER,
+            LICENSE_ISSUE_DATE: new Date(licenseIssueDate),
+            LICENSE_EXPIRE_DATE: new Date(licenseExpireDate),
+            SPECIALTY_LIST: JSON.stringify(specialtyList),
+            PREFERRED_AREA_OF_WORK: JSON.stringify(preferredAreaOfWork),
+            PREFERRED_WORK_TYPE: JSON.stringify(preferredWorkType),
+            EXP_JOBROLE_NAME: EXP_JOBROLE_NAME || '',
+            EXP_FACILITY_NAME: EXP_FACILITY_NAME || '',
+            EXP_FROM_DATE: new Date(expFromDate) || null,
+            EXP_TO_DATE: new Date(expToDate) || null,
+            EXP_SPECIALTY_LIST: expSpecialtyList || null,
+            REFERENCE_FIRST_NAME: REFERENCE_FIRST_NAME || '',
+            REFERENCE_LAST_NAME: REFERENCE_LAST_NAME || '',
+            REFERENCE_EMAIL_ADDRESS: REFERENCE_EMAIL_ADDRESS || '',
+            REFERENCE_FACILITY_NAME: REFERENCE_FACILITY_NAME || '',
+            REFERENCE_WORKING_FROM_DATE: new Date(referenceWorkingFromDate) || null,
+            REFERENCE_WORKING_TO_DATE: new Date(referenceWorkingToDate) || null,
+            REFERENCE_CONSENT: referenceConsent || false,
+            STREET_ADDRESS: STREET_ADDRESS || addressComponents.STREET,
+            STATE: addressComponents.STATE,
+            COUNTRY: addressComponents.COUNTRY,
+            ZIPCODE: addressComponents.ZIPCODE,
+            CITY: addressComponents.CITY,
+            USER_STATUS: "Active",
+            PROFILE_STATUS: "COMPLETED",
+            RECORD_TYPE: "U",
+            LAST_MODIFIED_DATE: new Date(),
+
         };
-        const updated = await User.update(updateData, {
-            where: { ID: 'fbffe962-9426-4ca6-ae2e-fcf8081cf6f2' },
-            returning: true
-        });
-        console.log("updated==>", updated)
+        const updated = await User.update(updateData, { where: { ID: USER_ID }, returning: true });
 
         if (updated) {
-            const updatedUser = await User.findOne({ where: { ID: 'fbffe962-9426-4ca6-ae2e-fcf8081cf6f2' } });
+            const updatedUser = await User.findOne({ where: { ID: USER_ID } });
             return res.status(200).json({ STATUS: true, MESSAGE: "User updated successfully", OUTPUT: updatedUser });
         } else {
             return res.status(400).json({ STATUS: false, MESSAGE: "Update failed", OUTPUT: [] });

@@ -1,52 +1,3 @@
-// import { DataTypes } from 'sequelize';
-// import { sequelize } from '../dbConfig/dbConfig.js';
-// import { v4 as uuidv4 } from 'uuid';
-
-// const User = sequelize.define('Users', {
-//   ID: {
-//     type: DataTypes.UUID,
-//     defaultValue: uuidv4, // Automatically generate a UUID for new records
-//     primaryKey: true, Set
-//   },
-//   FIRST_NAME: DataTypes.STRING,
-//   LAST_NAME: DataTypes.STRING,
-//   USER_STATUS: DataTypes.STRING,
-//   EMAIL_ADDRESS: DataTypes.STRING,
-//   PHONE_NUMBER: DataTypes.STRING,
-//   MOBILE_OTP: DataTypes.STRING,
-//   PROFILE_STATUS: DataTypes.STRING,
-//   USER_TYPE: DataTypes.STRING,
-//   PASSWORD: DataTypes.STRING,
-//   RECORD_TYPE: {
-//     type: DataTypes.STRING,
-//     defaultValue: 'I', // Automatically generate a UUID for new records
-
-//   },
-//   CREATED_BY: DataTypes.STRING,
-//   CREATED_DATE: {
-//     type: DataTypes.DATE,
-//     defaultValue: new Date(), // Automatically generate a UUID for new records
-
-//   },
-
-//   LAST_MODIFIED_BY: DataTypes.STRING,
-//   LAST_MODIFIED_DATE: {
-//     type: DataTypes.DATE,
-//     defaultValue: new Date(), // Automatically generate a UUID for new records
-
-//   },
-
-
-// });
-
-
-
-// (async () => {
-//   await sequelize.sync();
-
-// })();
-
-// export default User
 
 
 import { DataTypes } from 'sequelize';
@@ -55,8 +6,9 @@ import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 
-const SECRET_KEY = crypto.randomBytes(32);
-const IV_LENGTH = 16;
+// const SECRET_KEY = crypto.randomBytes(32);
+// const SECRET_KEY = Buffer.from(process.env.SECRET_KEY, 'hex');
+// const IV_LENGTH = 16;
 
 // function encryptOTP(otp) {
 //   const iv = crypto.randomBytes(IV_LENGTH);
@@ -90,6 +42,7 @@ const User = sequelize.define('Users', {
   PROFILE_STATUS: DataTypes.STRING,
   USER_TYPE: DataTypes.STRING,
   PASSWORD: DataTypes.STRING,
+  FILE_NAME: DataTypes.STRING,
   // SPECAILITY_ID: {
   //   type: DataTypes.INTEGER,
   //   allowNull: true, // Set to true if you want the field to be optional
@@ -98,42 +51,26 @@ const User = sequelize.define('Users', {
   //   type: DataTypes.INTEGER,
   //   allowNull: true, // Set to true if you want the field to be optional
   // },
-  JOBROLE_NAME: {
-    type: DataTypes.STRING,
-  },
-  SPECIALTY_LIST: {
-    type: DataTypes.ARRAY(DataTypes.STRING),
-  },
+  JOBROLE_NAME: { type: DataTypes.STRING },
+  SPECIALTY_LIST: { type: DataTypes.JSON },
   LICENSE_STATE: DataTypes.STRING,
   LICENSE_NUMBER: DataTypes.STRING,
   LICENSE_TYPE: DataTypes.STRING,
-  LICENSE_ISSUE_DATE: {
-    type: DataTypes.DATE,
-  },
-  LICENSE_EXPIRE_DATE: {
-    type: DataTypes.DATE,
-  },
-  PREFERRED_AREA_OF_WORK: DataTypes.STRING,
-  PREFERRED_WORK_TYPE: DataTypes.STRING,
+  LICENSE_ISSUE_DATE: { type: DataTypes.DATE },
+  LICENSE_EXPIRE_DATE: { type: DataTypes.DATE },
+  PREFERRED_AREA_OF_WORK: { type: DataTypes.JSON, },
+  PREFERRED_WORK_TYPE: { type: DataTypes.JSON },
+  EXP_SPECIALTY_LIST: { type: DataTypes.JSON },
   EXP_JOBROLE_NAME: DataTypes.STRING,
-  EXP_SPECIALTY_LIST: DataTypes.STRING,
   EXP_FACILITY_NAME: DataTypes.STRING,
-  EXP_FROM_DATE: {
-    type: DataTypes.DATE,
-  },
-  EXP_TO_DATE: {
-    type: DataTypes.DATE,
-  },
+  EXP_FROM_DATE: { type: DataTypes.DATE },
+  EXP_TO_DATE: { type: DataTypes.DATE },
   REFERENCE_FIRST_NAME: DataTypes.STRING,
   REFERENCE_LAST_NAME: DataTypes.STRING,
   REFERENCE_EMAIL_ADDRESS: DataTypes.STRING,
   REFERENCE_FACILITY_NAME: DataTypes.STRING,
-  REFERENCE_WORKING_FROM_DATE: {
-    type: DataTypes.DATE,
-  },
-  REFERENCE_WORKING_TO_DATE: {
-    type: DataTypes.DATE,
-  },
+  REFERENCE_WORKING_FROM_DATE: { type: DataTypes.DATE },
+  REFERENCE_WORKING_TO_DATE: { type: DataTypes.DATE },
   REFERENCE_CONTRACT: DataTypes.STRING,
   REFERENCE_CONSENT: DataTypes.BOOLEAN,
   STREET_ADDRESS: DataTypes.STRING,
@@ -142,14 +79,8 @@ const User = sequelize.define('Users', {
   CITY: DataTypes.STRING,
   STATE: DataTypes.STRING,
   ZIPCODE: DataTypes.STRING,
-  CHILD_USER_ID: {
-    type: DataTypes.INTEGER,
-    // allowNull: true, // Set to true if you want the field to be optional
-  },
-  ROLE_ID: {
-    type: DataTypes.INTEGER,
-    //   allowNull: true, // Set to true if you want the field to be optional
-  },
+  CHILD_USER_ID: { type: DataTypes.INTEGER },
+  ROLE_ID: { type: DataTypes.INTEGER },
   RECORD_TYPE: {
     type: DataTypes.STRING,
     defaultValue: 'I',
@@ -164,7 +95,8 @@ const User = sequelize.define('Users', {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW,
   },
-  // }, {
+},
+  // {
   //   hooks: {
   //     beforeCreate: async (user, options) => {
   //       if (user.PASSWORD) {
@@ -188,12 +120,13 @@ const User = sequelize.define('Users', {
   //             user.MOBILE_OTP = decryptOTP(user.MOBILE_OTP);
   //           }
   //         });
-  //       } else if (results && results.MOBILE_OTP) {
+  //       } else if (results?.MOBILE_OTP) {
   //         results.MOBILE_OTP = decryptOTP(results.MOBILE_OTP);
   //       }
   //     },
   //   },
-});
+  // }
+);
 
 // User.prototype.comparePassword = async function (plainPassword) {
 //   return await bcrypt.compare(plainPassword, this.PASSWORD);
