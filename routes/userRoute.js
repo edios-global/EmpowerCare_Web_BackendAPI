@@ -1,6 +1,7 @@
 
 import express from 'express'
-import { addUser, getAllState, OTPVerification, validateUserEmail, addOnboardWizardDetail, forgotPassword } from '../controller/userController.js'
+
+import { addUser, getAllState, OTPVerification, validateUserEmail, addOnboardWizardDetail,  forgotPassword, verifyOTP, changePassword  } from '../controller/userController.js'
 import multer from 'multer';
 import path from 'path';
 const router = express.Router()
@@ -20,5 +21,9 @@ router.post('/validateUserEmail', validateUserEmail);
 router.post('/verifyOtp', OTPVerification);
 router.post('/fetchStates', getAllState);
 router.post("/forgotPassword", forgotPassword)
+router.post("/verifyOtpMobile", verifyOTP)
+router.put("/changePassword", changePassword)
+
+
 
 export default router

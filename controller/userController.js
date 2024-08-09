@@ -1,6 +1,6 @@
 import asyncHandler from 'express-async-handler'
 import User from "../models/userModel.js";
-import { encryptPassword, generateOtp, generateTempPassword } from '../generic/genericMethods.js';
+import { generateOtp } from '../generic/genericMethods.js';
 import States from '../models/stateModel.js';
 
 export const validateUserEmail = asyncHandler(async (req, res) => {
@@ -149,28 +149,23 @@ export const forgotPassword = asyncHandler(async (req, res) => {
             return res.status(202).json({ STATUS: false, MESSAGE: "PARAMETER_MISSING", OUTPUT: [] });
         }
 
-        const user = await User.findOne({ where: { ID: 'fbffe962-9426-4ca6-ae2e-fcf8081cf6f2', EMAIL_ADDRESS } })
+        const user = await User.findOne({ where: { ID: '5c99d802-b3fa-43e4-ad07-74714ecd86e4', EMAIL_ADDRESS } })
         if (!user) {
             return res.status(404).json({ STATUS: false, MESSAGE: "user not Found", OUTPUT: [] })
         }
 
-        const tempPassword = await generateTempPassword();
-        console.log("tempPassword", tempPassword);
-        const encryptedPassword = await encryptPassword(tempPassword);
-
+        const otp = await generateOtp();
+        console.log("otp", otp)
         const updateUser = await User.update(
             {
-                PASSWORD: encryptedPassword,
-                USER_STATUS: "Active",
-                RECORD_TYPE: "U",
-                LAST_MODIFIED_DATE: new Date(),
+                MOBILE_OTP: otp,
             },
             {
-                where: { id: 'fbffe962-9426-4ca6-ae2e-fcf8081cf6f2' },
+                where: { id: '5c99d802-b3fa-43e4-ad07-74714ecd86e4' },
             }
         );
         if (updateUser) {
-            return res.status(404).json({ STATUS: false, MESSAGE: "Password reset succesfully ", OUTPUT: updateUser })
+            return res.status(404).json({ STATUS: true, MESSAGE: "Password reset succesfully ", OUTPUT: updateUser })
         }
 
     } catch (error) {
@@ -179,6 +174,76 @@ export const forgotPassword = asyncHandler(async (req, res) => {
     }
 });
 
+export const verifyOTP = asyncHandler(async (req, res) => {
+    try {
+        let { USER_ID, OTP } = req.body;
+
+        USER_ID = '5c99d802-b3fa-43e4-ad07-74714ecd86e4';
+        console.log("Received data:", USER_ID);
+
+
+        if (!USER_ID || !OTP) {
+            return res.status(202).json({ STATUS: false, MESSAGE: "PARAMETER_MISSING", OUTPUT: [] });
+        }
+
+        const user = await User.findOne({ where: { ID: USER_ID, MOBILE_OTP: OTP } });
+        console.log("user", user)
+        if (user) {
+            // OTP is correct
+            console.log("OTP matched successfully");
+        } else {
+            // OTP is incorrect
+            console.log("Invalid OTP or User ID");
+        }
+        if (!user) {
+            return res.status(400).json({ STATUS: false, MESSAGE: "Invalid OTP", OUTPUT: [] });
+        }
+        return res.status(200).json({ STATUS: true, MESSAGE: "OTP verified successfully", OUTPUT: [] });
+
+    } catch (error) {
+        console.log("Error:", error);
+        return res.status(500).json({ STATUS: false, MESSAGE: error.message, OUTPUT: [] });
+    }
+});
+
+export const changePassword = asyncHandler(async (req, res) => {
+    try {
+        let { USER_ID, PASSWORD } = req.body;
+
+        USER_ID = '5c99d802-b3fa-43e4-ad07-74714ecd86e4';
+        console.log("Received data:", USER_ID);
+
+        if (!USER_ID || !PASSWORD) {
+            return res.status(400).json({ STATUS: false, MESSAGE: 'PARAMETER_MISSING', OUTPUT: [] });
+        }
+
+        const user = await User.findOne({ where: { ID: USER_ID } });
+        if (!user) {
+            return res.status(404).json({ STATUS: false, MESSAGE: 'User not found', OUTPUT: [] });
+        }
+
+        // user.PASSWORD = hashedPassword;
+        const updateData = {
+            PASSWORD: PASSWORD || user.PASSWORD,
+        };
+        const updated = await User.update(updateData, {
+            where: { ID: USER_ID },
+            returning: true
+        });
+        console.log("updated==>", updated)
+        if (updated) {
+            const updatedUser = await User.findOne({ where: { ID: USER_ID, } });
+            console.log("updated==>", updatedUser)
+            return res.status(200).json({ STATUS: true, MESSAGE: "User updated successfully", OUTPUT: updatedUser });
+        } else {
+            return res.status(400).json({ STATUS: false, MESSAGE: "Update failed", OUTPUT: [] });
+        }
+
+    } catch (error) {
+        console.log("Error:", error);
+        return res.status(500).json({ STATUS: false, MESSAGE: error.message, OUTPUT: [] });
+    }
+});
 
 export const OTPVerification = asyncHandler(async (req, res) => {
     try {
@@ -191,7 +256,7 @@ export const OTPVerification = asyncHandler(async (req, res) => {
 
         // const user = await User.findOne({ where: { ID: USER_ID, MOBILE_OTP: OTP } });
         // if (user) {
-        if (OTP === "123456") {
+        if (OTP === "432947") {
             return res.status(200).json({ STATUS: true, MESSAGE: "Verification Code matched successful", OUTPUT: [] });
         } else {
             return res.status(201).json({ STATUS: false, MESSAGE: "Verification Code not matched", OUTPUT: [] });
