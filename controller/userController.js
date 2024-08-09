@@ -74,24 +74,18 @@ export const addOnboardWizardDetail = asyncHandler(async (req, res) => {
         const referenceWorkingFromDate = JSON.parse(REFERENCE_WORKING_FROM_DATE);
         const referenceWorkingToDate = JSON.parse(REFERENCE_WORKING_TO_DATE);
 
-        console.log("req.body", req.body);
-        console.log("req.file", req.file);
-
-
 
         if (!USER_ID) {
             return res.status(202).json({ STATUS: false, MESSAGE: "PARAMETER_MISSING", OUTPUT: [] });
         }
         const user = await User.findOne({ where: { ID: USER_ID } });
 
-        console.log("User Data:", user);
         if (!user) {
             console.log("User not found");
             return res.status(404).json({ STATUS: false, MESSAGE: "User not found", OUTPUT: [] });
         }
         const uploadFile = {};
         if (req.file) {
-            console.log("req.file", req.file);
             uploadFile.FILE_NAME = req.file.filename;
             uploadFile.FILE_TYPE = req.file.mimetype;
             uploadFile.FILE_PATH = req.file.destination + req.file.filename;
@@ -133,7 +127,6 @@ export const addOnboardWizardDetail = asyncHandler(async (req, res) => {
 
         };
         const updated = await User.update(updateData, { where: { ID: USER_ID }, returning: true });
-        console.log("updated==>", updated)
 
         if (updated) {
             const updatedUser = await User.findOne({ where: { ID: USER_ID } });
