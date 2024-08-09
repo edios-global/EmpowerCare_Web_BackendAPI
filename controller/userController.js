@@ -59,9 +59,25 @@ export const addUser = asyncHandler(async (req, res) => {
 
 export const addOnboardWizardDetail = asyncHandler(async (req, res) => {
     try {
+        const { USER_ID, JOBROLE_NAME, SPECIALTY_LIST, LICENSE_STATE, LICENSE_TYPE, LICENSE_NUMBER, LICENSE_ISSUE_DATE, LICENSE_EXPIRE_DATE, PREFERRED_AREA_OF_WORK, PREFERRED_WORK_TYPE, EXP_JOBROLE_NAME, EXP_FACILITY_NAME, EXP_FROM_DATE, EXP_TO_DATE, EXP_SPECIALTY_LIST, REFERENCE_FIRST_NAME, REFERENCE_LAST_NAME, REFERENCE_EMAIL_ADDRESS, REFERENCE_FACILITY_NAME, REFERENCE_WORKING_FROM_DATE, REFERENCE_WORKING_TO_DATE, REFERENCE_CONSENT, ADDRESS_COMPONENTS, STREET_ADDRESS, LONGITUDE, LATITUDE, CHILD_USER_ID, ROLE_ID } = req.body;
 
-        const { USER_ID, JOBROLE_NAME, SPECIALTY_LIST, LICENSE_STATE, LICENSE_NUMBER, LICENSE_TYPE, LICENSE_ISSUE_DATE, LICENSE_EXPIRE_DATE, FILE, FILE_NAME, PREFERRED_AREA_OF_WORK, PREFERRED_WORK_TYPE, EXP_JOBROLE_NAME, EXP_SPECIALTY_LIST, EXP_FACILITY_NAME, EXP_FROM_DATE, EXP_TO_DATE, REFERENCE_FIRST_NAME, REFERENCE_LAST_NAME, REFERENCE_EMAIL_ADDRESS, REFERENCE_FACILITY_NAME, REFERENCE_WORKING_FROM_DATE, REFERENCE_WORKING_TO_DATE, REFERENCE_CONSENT, STREET_ADDRESS, ADDRESS_COMPONENTS, LONGITUDE, LATITUDE, CHILD_USER_ID, ROLE_ID } = req.body;
-        console.log("Request Body:", req.body);
+        const specialtyList = JSON.parse(SPECIALTY_LIST);
+        const preferredAreaOfWork = JSON.parse(PREFERRED_AREA_OF_WORK);
+        const preferredWorkType = JSON.parse(PREFERRED_WORK_TYPE);
+        const expSpecialtyList = JSON.parse(EXP_SPECIALTY_LIST);
+        const addressComponents = JSON.parse(ADDRESS_COMPONENTS);
+        const referenceConsent = REFERENCE_CONSENT === 'true';
+        const licenseIssueDate = JSON.parse(LICENSE_ISSUE_DATE);
+        const licenseExpireDate = JSON.parse(LICENSE_EXPIRE_DATE);
+        const expFromDate = JSON.parse(EXP_FROM_DATE);
+        const expToDate = JSON.parse(EXP_TO_DATE);
+        const referenceWorkingFromDate = JSON.parse(REFERENCE_WORKING_FROM_DATE);
+        const referenceWorkingToDate = JSON.parse(REFERENCE_WORKING_TO_DATE);
+
+        console.log("req.body", req.body);
+        console.log("req.file", req.file);
+
+
 
         if (!USER_ID) {
             return res.status(202).json({ STATUS: false, MESSAGE: "PARAMETER_MISSING", OUTPUT: [] });
@@ -73,40 +89,50 @@ export const addOnboardWizardDetail = asyncHandler(async (req, res) => {
             console.log("User not found");
             return res.status(404).json({ STATUS: false, MESSAGE: "User not found", OUTPUT: [] });
         }
-
+        const uploadFile = {};
+        if (req.file) {
+            console.log("req.file", req.file);
+            uploadFile.FILE_NAME = req.file.filename;
+            uploadFile.FILE_TYPE = req.file.mimetype;
+            uploadFile.FILE_PATH = req.file.destination + req.file.filename;
+        }
         const updateData = {
-            FILE_NAME,
+            FILE_NAME: uploadFile.FILE_PATH || '',
+            FILE_TYPE: uploadFile.FILE_TYPE || '',
+            FILE_PATH: uploadFile.FILE_PATH || '',
             JOBROLE_NAME,
             LICENSE_STATE,
             LICENSE_TYPE,
             LICENSE_NUMBER,
-            LICENSE_ISSUE_DATE,
-            LICENSE_EXPIRE_DATE,
-            SPECIALTY_LIST: JSON.stringify(SPECIALTY_LIST),  // Store as JSON if the column type is TEXT or JSON
-            PREFERRED_AREA_OF_WORK: JSON.stringify(PREFERRED_AREA_OF_WORK),
-            PREFERRED_WORK_TYPE: JSON.stringify(PREFERRED_WORK_TYPE),
+            LICENSE_ISSUE_DATE: new Date(licenseIssueDate),
+            LICENSE_EXPIRE_DATE: new Date(licenseExpireDate),
+            SPECIALTY_LIST: JSON.stringify(specialtyList),
+            PREFERRED_AREA_OF_WORK: JSON.stringify(preferredAreaOfWork),
+            PREFERRED_WORK_TYPE: JSON.stringify(preferredWorkType),
             EXP_JOBROLE_NAME: EXP_JOBROLE_NAME || '',
             EXP_FACILITY_NAME: EXP_FACILITY_NAME || '',
-            EXP_FROM_DATE: EXP_FROM_DATE || null,
-            EXP_TO_DATE: EXP_TO_DATE || null,
-            EXP_SPECIALTY_LIST: EXP_SPECIALTY_LIST || null,
+            EXP_FROM_DATE: new Date(expFromDate) || null,
+            EXP_TO_DATE: new Date(expToDate) || null,
+            EXP_SPECIALTY_LIST: expSpecialtyList || null,
             REFERENCE_FIRST_NAME: REFERENCE_FIRST_NAME || '',
             REFERENCE_LAST_NAME: REFERENCE_LAST_NAME || '',
             REFERENCE_EMAIL_ADDRESS: REFERENCE_EMAIL_ADDRESS || '',
             REFERENCE_FACILITY_NAME: REFERENCE_FACILITY_NAME || '',
-            REFERENCE_WORKING_FROM_DATE: REFERENCE_WORKING_FROM_DATE || null,
-            REFERENCE_WORKING_TO_DATE: REFERENCE_WORKING_TO_DATE || null,
-            REFERENCE_CONSENT: REFERENCE_CONSENT || false,
-            STREET_ADDRESS: STREET_ADDRESS || ADDRESS_COMPONENTS.STREET,
-            STATE: ADDRESS_COMPONENTS.STATE,
-            COUNTRY: ADDRESS_COMPONENTS.COUNTRY,
-            ZIPCODE: ADDRESS_COMPONENTS.ZIPCODE,
-            CITY: ADDRESS_COMPONENTS.CITY
+            REFERENCE_WORKING_FROM_DATE: new Date(referenceWorkingFromDate) || null,
+            REFERENCE_WORKING_TO_DATE: new Date(referenceWorkingToDate) || null,
+            REFERENCE_CONSENT: referenceConsent || false,
+            STREET_ADDRESS: STREET_ADDRESS || addressComponents.STREET,
+            STATE: addressComponents.STATE,
+            COUNTRY: addressComponents.COUNTRY,
+            ZIPCODE: addressComponents.ZIPCODE,
+            CITY: addressComponents.CITY,
+            USER_STATUS: "Active",
+            PROFILE_STATUS: "COMPLETED",
+            RECORD_TYPE: "U",
+            LAST_MODIFIED_DATE: new Date(),
+
         };
-        const updated = await User.update(updateData, {
-            where: { ID: USER_ID },
-            returning: true
-        });
+        const updated = await User.update(updateData, { where: { ID: USER_ID }, returning: true });
         console.log("updated==>", updated)
 
         if (updated) {

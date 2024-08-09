@@ -42,6 +42,7 @@ const User = sequelize.define('Users', {
   PROFILE_STATUS: DataTypes.STRING,
   USER_TYPE: DataTypes.STRING,
   PASSWORD: DataTypes.STRING,
+  FILE_NAME: DataTypes.STRING,
   // SPECAILITY_ID: {
   //   type: DataTypes.INTEGER,
   //   allowNull: true, // Set to true if you want the field to be optional
@@ -50,49 +51,26 @@ const User = sequelize.define('Users', {
   //   type: DataTypes.INTEGER,
   //   allowNull: true, // Set to true if you want the field to be optional
   // },
-  JOBROLE_NAME: {
-    type: DataTypes.STRING,
-  },
-  SPECIALTY_LIST: {
-    type: DataTypes.JSON,
-  },
+  JOBROLE_NAME: { type: DataTypes.STRING },
+  SPECIALTY_LIST: { type: DataTypes.JSON },
   LICENSE_STATE: DataTypes.STRING,
   LICENSE_NUMBER: DataTypes.STRING,
   LICENSE_TYPE: DataTypes.STRING,
-  LICENSE_ISSUE_DATE: {
-    type: DataTypes.DATE,
-  },
-  LICENSE_EXPIRE_DATE: {
-    type: DataTypes.DATE,
-  },
-  PREFERRED_AREA_OF_WORK: {
-    type: DataTypes.JSON,
-  },
-  PREFERRED_WORK_TYPE: {
-    type: DataTypes.JSON,
-  },
-
-  EXP_SPECIALTY_LIST: {
-    type: DataTypes.JSON,
-  },
+  LICENSE_ISSUE_DATE: { type: DataTypes.DATE },
+  LICENSE_EXPIRE_DATE: { type: DataTypes.DATE },
+  PREFERRED_AREA_OF_WORK: { type: DataTypes.JSON, },
+  PREFERRED_WORK_TYPE: { type: DataTypes.JSON },
+  EXP_SPECIALTY_LIST: { type: DataTypes.JSON },
   EXP_JOBROLE_NAME: DataTypes.STRING,
   EXP_FACILITY_NAME: DataTypes.STRING,
-  EXP_FROM_DATE: {
-    type: DataTypes.DATE,
-  },
-  EXP_TO_DATE: {
-    type: DataTypes.DATE,
-  },
+  EXP_FROM_DATE: { type: DataTypes.DATE },
+  EXP_TO_DATE: { type: DataTypes.DATE },
   REFERENCE_FIRST_NAME: DataTypes.STRING,
   REFERENCE_LAST_NAME: DataTypes.STRING,
   REFERENCE_EMAIL_ADDRESS: DataTypes.STRING,
   REFERENCE_FACILITY_NAME: DataTypes.STRING,
-  REFERENCE_WORKING_FROM_DATE: {
-    type: DataTypes.DATE,
-  },
-  REFERENCE_WORKING_TO_DATE: {
-    type: DataTypes.DATE,
-  },
+  REFERENCE_WORKING_FROM_DATE: { type: DataTypes.DATE },
+  REFERENCE_WORKING_TO_DATE: { type: DataTypes.DATE },
   REFERENCE_CONTRACT: DataTypes.STRING,
   REFERENCE_CONSENT: DataTypes.BOOLEAN,
   STREET_ADDRESS: DataTypes.STRING,
@@ -101,14 +79,8 @@ const User = sequelize.define('Users', {
   CITY: DataTypes.STRING,
   STATE: DataTypes.STRING,
   ZIPCODE: DataTypes.STRING,
-  CHILD_USER_ID: {
-    type: DataTypes.INTEGER,
-    // allowNull: true, // Set to true if you want the field to be optional
-  },
-  ROLE_ID: {
-    type: DataTypes.INTEGER,
-    //   allowNull: true, // Set to true if you want the field to be optional
-  },
+  CHILD_USER_ID: { type: DataTypes.INTEGER },
+  ROLE_ID: { type: DataTypes.INTEGER },
   RECORD_TYPE: {
     type: DataTypes.STRING,
     defaultValue: 'I',
